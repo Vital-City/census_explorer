@@ -174,13 +174,14 @@ function unitLabel(v){
 
 /* ---------- quantile breaks ---------- */
 function breaks(vals){
-  const s=vals.filter(x=>x!=null).sort((a,b)=>a-b);
+  const s=vals.filter(x=>x!=null&&x!=="").map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
   if(!s.length) return [];
   const q=p=>s[Math.min(s.length-1,Math.floor(p*s.length))];
-  return [q(.2),q(.4),q(.6),q(.8)];
+  // sort the breaks themselves so a skewed or dirty input can never scramble them
+  return [q(.2),q(.4),q(.6),q(.8)].sort((a,b)=>a-b);
 }
 function colorFor(val,br){
-  if(val==null) return NODATA;
+  if(!Number.isFinite(val)) return NODATA;
   let i=0; while(i<br.length && val>br[i]) i++;
   return RAMP[i];
 }
@@ -276,7 +277,7 @@ function renderLegend(v,br){
 }
 
 function renderReading(v,vals){
-  const clean=vals.filter(x=>x!=null).sort((a,b)=>a-b);
+  const clean=vals.filter(x=>x!=null&&x!=="").map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
   const med=clean.length?clean[Math.floor(clean.length/2)]:null;
   const lvl=LEVELS.find(l=>l.id===state.geo).label.toLowerCase();
   $('reading').innerHTML="Median across "+clean.length+" areas: <b>"+fmtValue(v,med)+"</b> &nbsp; ("+VARBYID[v].label.toLowerCase()+" by "+lvl+")";
