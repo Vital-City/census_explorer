@@ -1,0 +1,7 @@
+{
+  "generated": "2026-07-10",
+  "acs_release": "2020-2024 ACS5",
+  "decennial": "2020 Census PL",
+  "geographies": ["tract", "blockgroup", "puma", "borough", "block", "nta"],
+  "note": "Shares use each variable's ACS universe. Medians and dollar values carry no share. Block level is 2020 decennial only."
+}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NYC census explorer</title>
+<link rel="stylesheet" href="https://use.typekit.net/nlh6iak.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  @font-face{ font-family:"GascogneTS";
+    src:url("https://vital-city-nyc.github.io/vital-city-design-system/fonts/GascogneTS-Light.ttf") format("truetype");
+    font-weight:300; font-display:swap; }
+  :root{
+    --vc-black:#050507; --vc-cloud:#dddddd; --vc-paper:#f7f7f4; --vc-charcoal:#707175;
+    --vc-orange:#ff7c53; --vc-magenta:#e7466d; --vc-cerulean:#217ebe; --vc-chartreuse:#dde44c;
+    --vc-sans:"halyard-text", Inter, "Helvetica Neue", Arial, sans-serif;
+    --vc-serif:"GascogneTS","Source Serif 4",Georgia,serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ font-family:var(--vc-sans); font-weight:300; color:#262626; background:#fff; }
+  .card{ max-width:1000px; margin:0 auto; border:1.5px solid var(--vc-black); background:#fff; }
+  .head{ padding:20px 22px 8px; }
+  .head h1{ font-family:var(--vc-sans); font-weight:800; font-size:1.5rem; line-height:1.15; margin:0 0 6px; }
+  .head .dek{ font-weight:300; color:var(--vc-charcoal); font-size:.95rem; max-width:60ch; margin:0; }
+  .toolbar{ display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; padding:14px 22px; border-top:1px solid var(--vc-cloud); }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-weight:700; text-transform:uppercase; font-size:.62rem; letter-spacing:.1em; color:var(--vc-charcoal); }
+  select{ font-family:var(--vc-sans); font-size:.9rem; padding:7px 9px; border:1px solid var(--vc-black); background:#fff; border-radius:0; min-width:190px; }
+  .dl{ margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  button.dl-btn{ font-family:var(--vc-sans); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    padding:8px 12px; border:1px solid var(--vc-black); background:#fff; color:var(--vc-black); cursor:pointer; border-radius:0; }
+  button.dl-btn:hover{ background:var(--vc-chartreuse); }
+  button.dl-btn:focus-visible{ outline:2px solid var(--vc-orange); outline-offset:2px; }
+  .map-wrap{ position:relative; height:520px; border-top:1px solid var(--vc-black); }
+  #map{ position:absolute; inset:0; background:#fff; }
+  .leaflet-container{ font-family:var(--vc-sans); }
+  .legend{ position:absolute; left:14px; bottom:16px; z-index:600; background:#fff; border:1px solid var(--vc-black); padding:10px 12px; max-width:230px; }
+  .legend .lg-title{ font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; line-height:1.25; }
+  .legend .lg-row{ display:flex; align-items:center; gap:8px; font-size:.72rem; margin:2px 0; }
+  .legend .sw{ width:16px; height:12px; border:1px solid rgba(0,0,0,.35); flex:0 0 auto; }
+  .reading{ padding:12px 22px; border-top:1px solid var(--vc-cloud); font-size:.9rem; }
+  .reading b{ font-family:var(--vc-serif); font-weight:300; font-size:1.35rem; }
+  .source{ padding:12px 22px 18px; border-top:1px solid var(--vc-cloud); font-size:.72rem; color:var(--vc-charcoal); line-height:1.5; }
+  .source a{ color:var(--vc-charcoal); }
+  .expand-btn{ position:absolute; top:14px; right:14px; z-index:600; display:none; gap:6px; align-items:center;
+    font-family:var(--vc-sans); font-weight:700; font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
+    background:#fff; color:var(--vc-black); border:1px solid var(--vc-black); padding:6px 10px; text-decoration:none; }
+  .expand-btn:hover{ background:var(--vc-chartreuse); }
+  .vc-popup h4{ font-weight:700; font-size:.8rem; margin:0 0 6px; }
+  .vc-popup .pv{ font-family:var(--vc-serif); font-weight:300; font-size:1.5rem; line-height:1; margin:2px 0 4px; }
+  .vc-popup .pm{ font-size:.72rem; color:var(--vc-charcoal); }
+  .reset-btn{ background:#fff; border:1px solid var(--vc-black); width:30px; height:30px; font-size:14px; cursor:pointer; line-height:1; }
+  .reset-btn:hover{ background:var(--vc-chartreuse); }
+  /* embed / compact */
+  html.embed, body.embed{ height:100%; }
+  body.embed{ padding:0; }
+  body.embed .card{ border:none; max-width:none; }
+  body.embed .expand-btn{ display:inline-flex; }
+  body.compact .reading, body.compact .source{ display:none; }
+  body.compact .head h1{ font-size:1.3rem; }
+  body.compact .map-wrap{ height:440px; }
+  @media(max-width:720px){ .dl{ margin-left:0; } select{ min-width:150px; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <h1>NYC census explorer</h1>
+    <p class="dek">Pick a geography and a variable, read it on the map and download the values for that level. Shares use each variable's own census universe, not total population.</p>
+  </div>
+  <div class="toolbar">
+    <div class="field">
+      <label for="geoSel">Geography</label>
+      <select id="geoSel"></select>
+    </div>
+    <div class="field">
+      <label for="varSel">Variable</label>
+      <select id="varSel"></select>
+    </div>
+    <div class="dl">
+      <button class="dl-btn" id="dlVar">Download this variable</button>
+      <button class="dl-btn" id="dlAll">Download all at this level</button>
+    </div>
+  </div>
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="legend" id="legend"></div>
+    <a class="expand-btn" id="expandBtn" href="./" target="_top" title="Open full-screen view">Expand <span>&#8599;</span></a>
+  </div>
+  <div class="reading" id="reading"></div>
+  <div class="source" id="source"></div>
+</div>
+
+<script>
+const SLUG = "nyc-census-explorer";
+const DATA = "./data/";
+const DEFAULT_VIEW = { center:[40.7128,-74.0060], zoom:10 };
+const RAMP = ["#fdeaf0","#f4aec6","#ec739c","#e7466d","#b12b52"]; // sequential magenta, subject color
+const NODATA = "#e9e9e9";
+const NYC_BOUNDS = L.latLngBounds([40.45,-74.30],[40.95,-73.65]);
+
+const LEVELS = [
+  {id:"borough",    label:"Borough"},
+  {id:"puma",       label:"PUMA (community district approx.)"},
+  {id:"nta",        label:"Neighborhood (NTA)"},
+  {id:"tract",      label:"Census tract"},
+  {id:"blockgroup", label:"Census block group"},
+  {id:"block",      label:"Census block (2020 decennial only)"}
+];
+
+let META={}, VARS=[], VARBYID={};
+let state={ geo:"tract", variable:null, rows:{}, rawcsv:"", geojson:null, layer:null };
+
+const $=id=>document.getElementById(id);
+
+/* ---------- tiny CSV parser (data files are numeric, no embedded commas) ---------- */
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/);
+  const head=lines[0].split(",");
+  const out=[];
+  for(let i=1;i<lines.length;i++){
+    const cells=lines[i].split(",");
+    const o={};
+    head.forEach((h,j)=>{ const v=cells[j]; o[h]=(v===undefined||v==="")?null:v; });
+    out.push(o);
+  }
+  return {head, rows:out};
+}
+
+/* ---------- map init ---------- */
+const map=L.map('map',{ center:DEFAULT_VIEW.center, zoom:DEFAULT_VIEW.zoom,
+  minZoom:9, maxZoom:16, zoomControl:true, preferCanvas:true, attributionControl:false,
+  maxBounds:NYC_BOUNDS.pad(0.25), maxBoundsViscosity:1.0 });
+L.control.attribution({prefix:false}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+  { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',
+  { subdomains:'abcd', maxZoom:20, opacity:.7 }).addTo(map);
+
+// reset-view control
+const ResetCtl=L.Control.extend({ options:{position:'topleft'},
+  onAdd:function(){ const b=L.DomUtil.create('button','reset-btn'); b.innerHTML='&#8634;'; b.title='Reset view';
+    L.DomEvent.disableClickPropagation(b);
+    b.onclick=()=>{ map.flyTo(DEFAULT_VIEW.center,DEFAULT_VIEW.zoom); map.closePopup(); };
+    return b; } });
+map.addControl(new ResetCtl());
+
+/* ---------- value access + formatting ---------- */
+function colFor(v){ // which column carries the mapped value
+  return VARBYID[v].type==="rate" ? v+"__share" : v+"__estimate";
+}
+function num(row,col){ const x=row?row[col]:null; return x==null?null:+x; }
+
+function fmtValue(v,val){
+  if(val==null) return "no data";
+  const t=VARBYID[v].type, id=v, d=VARBYID[v].decimals;
+  if(t==="rate") return val.toFixed(1)+"%";
+  if(id==="pop_density") return Math.round(val).toLocaleString()+" / sq mi";
+  if(id==="median_age") return val.toFixed(1)+" years";
+  if(id==="total_pop") return Math.round(val).toLocaleString();
+  if(id.indexOf("income")>=0||id.indexOf("rent")>=0||id.indexOf("value")>=0) return "$"+Math.round(val).toLocaleString();
+  return val.toFixed(d);
+}
+function unitLabel(v){
+  const t=VARBYID[v].type, id=v;
+  if(t==="rate") return "percent";
+  if(id==="pop_density") return "people per sq mi";
+  if(id==="median_age") return "years";
+  if(id.indexOf("income")>=0||id.indexOf("rent")>=0||id.indexOf("value")>=0) return "dollars";
+  return "people";
+}
+
+/* ---------- quantile breaks ---------- */
+function breaks(vals){
+  const s=vals.filter(x=>x!=null).sort((a,b)=>a-b);
+  if(!s.length) return [];
+  const q=p=>s[Math.min(s.length-1,Math.floor(p*s.length))];
+  return [q(.2),q(.4),q(.6),q(.8)];
+}
+function colorFor(val,br){
+  if(val==null) return NODATA;
+  let i=0; while(i<br.length && val>br[i]) i++;
+  return RAMP[i];
+}
+
+/* ---------- populate selectors ---------- */
+function buildGeoSel(){
+  $('geoSel').innerHTML="";
+  LEVELS.forEach(l=>{ const o=document.createElement('option'); o.value=l.id; o.textContent=l.label; $('geoSel').appendChild(o); });
+  $('geoSel').value=state.geo;
+}
+function buildVarSel(){
+  const sel=$('varSel'); sel.innerHTML="";
+  const groups=[...new Set(VARS.map(v=>v.group))];
+  groups.forEach(g=>{
+    const og=document.createElement('optgroup'); og.label=g;
+    VARS.filter(v=>v.group===g).forEach(v=>{
+      const o=document.createElement('option'); o.value=v.id; o.textContent=v.label;
+      o.disabled=!v.geos.includes(state.geo);
+      if(o.disabled) o.textContent+=" \u2014 n/a here";
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
+  });
+  // if current variable not available, pick first available
+  if(!state.variable || !VARBYID[state.variable].geos.includes(state.geo)){
+    const first=VARS.find(v=>v.geos.includes(state.geo));
+    state.variable=first?first.id:null;
+  }
+  sel.value=state.variable;
+}
+
+/* ---------- load a geography level ---------- */
+async function loadLevel(geo){
+  state.geo=geo;
+  const [gj,csv]=await Promise.all([
+    fetch(DATA+geo+"_geometry.geojson").then(r=>{ if(!r.ok) throw 0; return r.json(); }),
+    fetch(DATA+geo+"_data.csv").then(r=>{ if(!r.ok) throw 0; return r.text(); })
+  ]).catch(()=>[null,null]);
+  if(!gj||!csv){
+    if(state.layer){ map.removeLayer(state.layer); state.layer=null; }
+    $('legend').innerHTML='<div class="lg-title">No data file yet for this level</div>';
+    $('reading').textContent="This level has no data file in ./data/ yet. Run the pipeline to generate it.";
+    return;
+  }
+  state.geojson=gj; state.rawcsv=csv;
+  const p=parseCSV(csv); state.rows={};
+  p.rows.forEach(r=>{ state.rows[r.GEOID]=r; });
+  buildVarSel();
+  drawLayer(); render();
+}
+
+function drawLayer(){
+  if(state.layer) map.removeLayer(state.layer);
+  state.layer=L.geoJSON(state.geojson,{
+    style:()=>({ color:"#333", weight:.5, fillOpacity:.82, fillColor:NODATA }),
+    onEachFeature:(f,lyr)=>{
+      lyr.on('mouseover',()=>lyr.setStyle({weight:2,color:"#050507"}));
+      lyr.on('mouseout',()=>lyr.setStyle({weight:.5,color:"#333"}));
+      lyr.on('click',()=>openPopup(f,lyr));
+    }
+  }).addTo(map);
+}
+
+function render(){
+  if(!state.variable){ return; }
+  const v=state.variable, col=colFor(v);
+  const vals=Object.values(state.rows).map(r=>num(r,col));
+  const br=breaks(vals);
+  state.layer.eachLayer(lyr=>{
+    const gid=lyr.feature.properties.GEOID;
+    const val=num(state.rows[gid],col);
+    lyr.setStyle({ fillColor:colorFor(val,br) });
+  });
+  renderLegend(v,br);
+  renderReading(v,vals);
+}
+
+function renderLegend(v,br){
+  const lg=$('legend');
+  const label=VARBYID[v].label, unit=unitLabel(v);
+  let rows='<div class="lg-title">'+label+' <span style="font-weight:300">('+unit+')</span></div>';
+  const edges=[-Infinity,...br,Infinity];
+  for(let i=0;i<RAMP.length;i++){
+    const lo=edges[i], hi=edges[i+1];
+    let txt;
+    if(i===0) txt="< "+fmtValue(v,br[0]);
+    else if(i===RAMP.length-1) txt="\u2265 "+fmtValue(v,br[br.length-1]);
+    else txt=fmtValue(v,lo)+" \u2013 "+fmtValue(v,hi);
+    rows+='<div class="lg-row"><span class="sw" style="background:'+RAMP[i]+'"></span>'+txt+'</div>';
+  }
+  rows+='<div class="lg-row"><span class="sw" style="background:'+NODATA+'"></span>no data</div>';
+  lg.innerHTML=rows;
+}
+
+function renderReading(v,vals){
+  const clean=vals.filter(x=>x!=null).sort((a,b)=>a-b);
+  const med=clean.length?clean[Math.floor(clean.length/2)]:null;
+  const lvl=LEVELS.find(l=>l.id===state.geo).label.toLowerCase();
+  $('reading').innerHTML="Median across "+clean.length+" areas: <b>"+fmtValue(v,med)+"</b> &nbsp; ("+VARBYID[v].label.toLowerCase()+" by "+lvl+")";
+}
+
+function openPopup(f,lyr){
+  const gid=f.properties.GEOID, v=state.variable, row=state.rows[gid];
+  const vd=VARBYID[v];
+  const mapped=num(row,colFor(v));
+  let html='<div class="vc-popup"><h4>'+LEVELS.find(l=>l.id===state.geo).label+' '+gid+'</h4>';
+  html+='<div class="pv">'+fmtValue(v,mapped)+'</div>';
+  if(vd.type==="rate"){
+    const est=num(row,v+"__estimate"), uni=num(row,v+"__universe"), m=num(row,v+"__share_moe");
+    html+='<div class="pm">'+ (est!=null?Math.round(est).toLocaleString():"?")+' of '+(uni!=null?Math.round(uni).toLocaleString():"?")+' '+vd.universe_label.toLowerCase();
+    if(m!=null) html+=' &middot; margin of error \u00b1'+m.toFixed(1)+' pts';
+    html+='</div>';
+  } else {
+    const m=num(row,v+"__moe");
+    if(m!=null) html+='<div class="pm">margin of error \u00b1'+fmtValue(v,m).replace(/^[$]/,'$')+'</div>';
+    html+='<div class="pm" style="margin-top:2px">universe: '+vd.universe_label.toLowerCase()+'</div>';
+  }
+  html+='</div>';
+  L.popup({className:'vc-pop'}).setLatLng(lyr.getBounds().getCenter()).setContent(html).openOn(map);
+}
+
+/* ---------- downloads ---------- */
+function dlBlob(name,text){
+  const b=new Blob([text],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function downloadVariable(){
+  const v=state.variable, vd=VARBYID[v];
+  const cols=vd.type==="rate"
+    ? ["GEOID",v+"__estimate",v+"__moe",v+"__universe",v+"__share",v+"__share_moe"]
+    : ["GEOID",v+"__estimate",v+"__moe"];
+  const present=cols.filter(c=>c==="GEOID"|| Object.values(state.rows)[0]?.hasOwnProperty(c));
+  let out=present.join(",")+"\n";
+  Object.values(state.rows).forEach(r=>{ out+=present.map(c=>r[c]==null?"":r[c]).join(",")+"\n"; });
+  dlBlob("nyc_"+v+"_"+state.geo+".csv", out);
+}
+function downloadAll(){ dlBlob("nyc_census_"+state.geo+"_all.csv", state.rawcsv); }
+
+/* ---------- source line ---------- */
+function renderSource(){
+  $('source').innerHTML="Source: U.S. Census Bureau, "+ (META.acs_release||"ACS 5-year") +
+    " and "+ (META.decennial||"2020 Census") +". Boundaries: NYC Department of City Planning (shoreline clipped). "+
+    "Generated "+(META.generated||"")+". Shares are computed against each variable's census universe. "+
+    "Class breaks are quintiles. <a href=\"./methodology.md\" target=\"_blank\" rel=\"noopener\">Methodology</a>.";
+}
+
+/* ---------- events ---------- */
+$('geoSel').addEventListener('change',e=>loadLevel(e.target.value));
+$('varSel').addEventListener('change',e=>{ state.variable=e.target.value; render(); map.closePopup(); });
+$('dlVar').addEventListener('click',downloadVariable);
+$('dlAll').addEventListener('click',downloadAll);
+
+/* ---------- embed / compact contract ---------- */
+const isEmbed=new URLSearchParams(location.search).get('embed')==='1';
+if(isEmbed) document.body.classList.add('embed');
+function syncCompact(){ document.body.classList.toggle('compact', isEmbed || window.innerWidth<=720); }
+syncCompact(); window.addEventListener('resize',syncCompact);
+if(isEmbed){
+  let last=0;
+  const postHeight=()=>{ const card=document.querySelector('.card');
+    const h=Math.ceil(Math.max(card?card.getBoundingClientRect().height:0, document.body.scrollHeight, document.documentElement.scrollHeight));
+    if(h && h!==last){ last=h; parent.postMessage({type:'vc-embed-height',id:SLUG,height:h},'*'); } };
+  window.addEventListener('load',postHeight); window.addEventListener('resize',postHeight);
+  document.fonts && document.fonts.ready && document.fonts.ready.then(postHeight);
+  if(window.ResizeObserver){ new ResizeObserver(postHeight).observe(document.body); }
+}
+if(window.ResizeObserver){ new ResizeObserver(()=>map.invalidateSize(false)).observe(document.querySelector('.map-wrap')); }
+
+/* ---------- boot ---------- */
+(async function(){
+  try{
+    META=await fetch(DATA+"metadata.json").then(r=>r.json());
+    VARS=await fetch(DATA+"variables.json").then(r=>r.json());
+    VARS.forEach(v=>VARBYID[v.id]=v);
+    buildGeoSel(); renderSource();
+    await loadLevel(state.geo);
+  }catch(e){
+    $('reading').textContent="Could not load ./data/. Run the pipeline first, or serve this folder over http.";
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>

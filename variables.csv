@@ -1,0 +1,24 @@
+id,group,label,type,decimals,acs_est,acs_universe,universe_minus,dec_est,dec_universe,geos,universe_label,notes
+total_pop,Demographics,Total population,amount,0,B01003_001,,,P1_001N,,block|blockgroup|tract|nta|puma|borough,Total population,Population count. No share.
+pop_density,Demographics,Population density (per sq mi),amount,0,,,,,,block|blockgroup|tract|nta|puma|borough,Land area,Computed as population divided by ALAND land area. No share.
+median_age,Demographics,Median age,amount,1,B01002_001,,,,,blockgroup|tract|puma|borough,Total population,Median. Cannot be aggregated so NTA and block excluded.
+pct_white_nh,Demographics,Non-Hispanic white,rate,1,B03002_003,B03002_001,,P2_005N,P2_001N,block|blockgroup|tract|nta|puma|borough,Total population,
+pct_black_nh,Demographics,Non-Hispanic Black,rate,1,B03002_004,B03002_001,,P2_006N,P2_001N,block|blockgroup|tract|nta|puma|borough,Total population,
+pct_asian_nh,Demographics,Non-Hispanic Asian,rate,1,B03002_006,B03002_001,,P2_008N,P2_001N,block|blockgroup|tract|nta|puma|borough,Total population,
+pct_hispanic,Demographics,Hispanic or Latino (any race),rate,1,B03002_012,B03002_001,,P2_002N,P2_001N,block|blockgroup|tract|nta|puma|borough,Total population,
+pct_other_nh,Demographics,Other or two+ races (non-Hispanic),rate,1,B03002_005;B03002_007;B03002_008;B03002_009,B03002_001,,P2_007N;P2_009N;P2_010N;P2_011N,P2_001N,block|blockgroup|tract|nta|puma|borough,Total population,Multi-cell sum. Confirm cells on first run.
+pct_under18,Demographics,Under 18,rate,1,B09001_001,B01003_001,,,,tract|nta|puma|borough,Total population,B09001 not reliably at block group.
+pct_65plus,Demographics,Age 65 and older,rate,1,B01001_020;B01001_021;B01001_022;B01001_023;B01001_024;B01001_025;B01001_044;B01001_045;B01001_046;B01001_047;B01001_048;B01001_049,B01001_001,,,,tract|nta|puma|borough,Total population,Multi-cell sum by sex. Confirm cells on first run.
+pct_foreign_born,Demographics,Foreign-born,rate,1,B05002_013,B05002_001,,,,blockgroup|tract|nta|puma|borough,Total population,
+median_hh_income,Economic,Median household income,amount,0,B19013_001,,,,,blockgroup|tract|puma|borough,Households,Median dollars. Cannot be aggregated so NTA and block excluded.
+pct_poverty,Economic,Below poverty line,rate,1,B17001_002,B17001_001,,,,blockgroup|tract|nta|puma|borough,Population with poverty status determined,
+pct_bachelors_plus,Economic,Bachelor's degree or higher,rate,1,B15003_022;B15003_023;B15003_024;B15003_025,B15003_001,,,,blockgroup|tract|nta|puma|borough,Population 25 and older,Multi-cell sum. Confirm cells on first run.
+pct_unemployed,Economic,Unemployment rate,rate,1,B23025_005,B23025_003,,,,blockgroup|tract|nta|puma|borough,Civilian labor force 16+,
+pct_snap,Economic,Receiving SNAP benefits,rate,1,B22010_002,B22010_001,,,,blockgroup|tract|nta|puma|borough,Households,
+pct_transit_commute,Economic,Commute by public transit,rate,1,B08301_010,B08301_001,,,,tract|nta|puma|borough,Workers 16+ who commute,B08301 not reliably at block group.
+median_gross_rent,Housing,Median gross rent,amount,0,B25064_001,,,,,blockgroup|tract|puma|borough,Renter units paying cash rent,Median dollars. NTA and block excluded.
+median_home_value,Housing,Median home value,amount,0,B25077_001,,,,,blockgroup|tract|puma|borough,Owner-occupied units,Median dollars. NTA and block excluded.
+pct_renter,Housing,Renter-occupied,rate,1,B25003_003,B25003_001,,,,blockgroup|tract|nta|puma|borough,Occupied housing units,
+pct_rent_burdened,Housing,Rent burdened (30%+ of income),rate,1,B25070_007;B25070_008;B25070_009;B25070_010,B25070_001,B25070_011,,,blockgroup|tract|nta|puma|borough,Renter units paying rent (excludes not computed),Denominator subtracts not-computed cell.
+pct_no_vehicle,Housing,No vehicle available,rate,1,B25044_003;B25044_010,B25044_001,,,,blockgroup|tract|nta|puma|borough,Occupied housing units,
+pct_vacant,Housing,Vacant housing units,rate,1,B25002_003,B25002_001,,,,blockgroup|tract|nta|puma|borough,Total housing units,
