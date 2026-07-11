@@ -176,16 +176,24 @@ function unitLabel(v){
 /* ---------- quantile breaks ---------- */
 function breaks(vals){
   const s=vals.filter(x=>x!=null&&x!=="").map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
-  if(!s.length) return [];
+  if(!s.length) return {cuts:[]};
+  const mn=s[0], mx=s[s.length-1];
   const q=p=>s[Math.min(s.length-1,Math.floor(p*s.length))];
-  const n=RAMP.length, cuts=[];               // n colors need n-1 cutpoints
+  const n=RAMP.length; let cuts=[];
   for(let k=1;k<n;k++) cuts.push(q(k/n));
-  return cuts.sort((a,b)=>a-b);               // sort so dirty input can never scramble
+  // dedupe and drop cuts sitting on the min or max, which make empty classes
+  // (e.g. the many zero-population parks and airports at NTA level)
+  cuts=[...new Set(cuts)].filter(c=>c>mn && c<mx).sort((a,b)=>a-b);
+  return {cuts, min:mn, max:mx};
+}
+function rampColor(i,nClasses){
+  if(nClasses<=1) return RAMP[RAMP.length-1];
+  return RAMP[Math.round(i/(nClasses-1)*(RAMP.length-1))];
 }
 function colorFor(val,br){
   if(!Number.isFinite(val)) return NODATA;
-  let i=0; while(i<br.length && val>br[i]) i++;
-  return RAMP[i];
+  const cuts=br.cuts||[]; let i=0; while(i<cuts.length && val>cuts[i]) i++;
+  return rampColor(i, cuts.length+1);
 }
 
 /* ---------- populate selectors ---------- */
@@ -265,14 +273,18 @@ function renderLegend(v,br){
   const lg=$('legend');
   const label=VARBYID[v].label, unit=unitLabel(v);
   let rows='<div class="lg-title">'+label+' <span style="font-weight:300">('+unit+')</span></div>';
-  const edges=[-Infinity,...br,Infinity];
-  for(let i=0;i<RAMP.length;i++){
-    const lo=edges[i], hi=edges[i+1];
-    let txt;
-    if(i===0) txt="< "+fmtValue(v,br[0]);
-    else if(i===RAMP.length-1) txt="\u2265 "+fmtValue(v,br[br.length-1]);
-    else txt=fmtValue(v,lo)+" \u2013 "+fmtValue(v,hi);
-    rows+='<div class="lg-row"><span class="sw" style="background:'+RAMP[i]+'"></span>'+txt+'</div>';
+  const cuts=br.cuts||[];
+  const nClasses=cuts.length+1;
+  if(!cuts.length){
+    rows+='<div class="lg-row"><span class="sw" style="background:'+rampColor(0,1)+'"></span>all areas similar</div>';
+  } else {
+    for(let i=0;i<nClasses;i++){
+      let txt;
+      if(i===0) txt="< "+fmtValue(v,cuts[0]);
+      else if(i===nClasses-1) txt="\u2265 "+fmtValue(v,cuts[cuts.length-1]);
+      else txt=fmtValue(v,cuts[i-1])+" \u2013 "+fmtValue(v,cuts[i]);
+      rows+='<div class="lg-row"><span class="sw" style="background:'+rampColor(i,nClasses)+'"></span>'+txt+'</div>';
+    }
   }
   rows+='<div class="lg-row"><span class="sw" style="background:'+NODATA+'"></span>no data</div>';
   lg.innerHTML=rows;
