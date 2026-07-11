@@ -1,0 +1,232 @@
+[
+  {
+    "id": "total_pop",
+    "group": "Demographics",
+    "label": "Total population",
+    "type": "amount",
+    "decimals": 0,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": "Population count. No share."
+  },
+  {
+    "id": "pop_density",
+    "group": "Demographics",
+    "label": "Population density (per sq mi)",
+    "type": "amount",
+    "decimals": 0,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Land area",
+    "notes": "Computed as population divided by ALAND land area. No share."
+  },
+  {
+    "id": "median_age",
+    "group": "Demographics",
+    "label": "Median age",
+    "type": "amount",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": "Median. Cannot be aggregated so NTA and block excluded."
+  },
+  {
+    "id": "pct_white_nh",
+    "group": "Demographics",
+    "label": "Non-Hispanic white",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": ""
+  },
+  {
+    "id": "pct_black_nh",
+    "group": "Demographics",
+    "label": "Non-Hispanic Black",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": ""
+  },
+  {
+    "id": "pct_asian_nh",
+    "group": "Demographics",
+    "label": "Non-Hispanic Asian",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": ""
+  },
+  {
+    "id": "pct_hispanic",
+    "group": "Demographics",
+    "label": "Hispanic or Latino (any race)",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": ""
+  },
+  {
+    "id": "pct_other_nh",
+    "group": "Demographics",
+    "label": "Other or two+ races (non-Hispanic)",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": "Multi-cell sum. Confirm cells on first run."
+  },
+  {
+    "id": "pct_under18",
+    "group": "Demographics",
+    "label": "Under 18",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": "B09001 not reliably at block group."
+  },
+  {
+    "id": "pct_65plus",
+    "group": "Demographics",
+    "label": "Age 65 and older",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": "Multi-cell sum by sex. Confirm cells on first run."
+  },
+  {
+    "id": "pct_foreign_born",
+    "group": "Demographics",
+    "label": "Foreign-born",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total population",
+    "notes": ""
+  },
+  {
+    "id": "median_hh_income",
+    "group": "Economic",
+    "label": "Median household income",
+    "type": "amount",
+    "decimals": 0,
+    "geos": ["blockgroup", "tract", "puma", "borough"],
+    "universe_label": "Households",
+    "notes": "Median dollars. Cannot be aggregated so NTA and block excluded."
+  },
+  {
+    "id": "pct_poverty",
+    "group": "Economic",
+    "label": "Below poverty line",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Population with poverty status determined",
+    "notes": ""
+  },
+  {
+    "id": "pct_bachelors_plus",
+    "group": "Economic",
+    "label": "Bachelor's degree or higher",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Population 25 and older",
+    "notes": "Multi-cell sum. Confirm cells on first run."
+  },
+  {
+    "id": "pct_unemployed",
+    "group": "Economic",
+    "label": "Unemployment rate",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Civilian labor force 16+",
+    "notes": ""
+  },
+  {
+    "id": "pct_snap",
+    "group": "Economic",
+    "label": "Receiving SNAP benefits",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Households",
+    "notes": ""
+  },
+  {
+    "id": "pct_transit_commute",
+    "group": "Economic",
+    "label": "Commute by public transit",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["tract", "nta", "puma", "borough"],
+    "universe_label": "Workers 16+ who commute",
+    "notes": "B08301 not reliably at block group."
+  },
+  {
+    "id": "median_gross_rent",
+    "group": "Housing",
+    "label": "Median gross rent",
+    "type": "amount",
+    "decimals": 0,
+    "geos": ["blockgroup", "tract", "puma", "borough"],
+    "universe_label": "Renter units paying cash rent",
+    "notes": "Median dollars. NTA and block excluded."
+  },
+  {
+    "id": "median_home_value",
+    "group": "Housing",
+    "label": "Median home value",
+    "type": "amount",
+    "decimals": 0,
+    "geos": ["blockgroup", "tract", "puma", "borough"],
+    "universe_label": "Owner-occupied units",
+    "notes": "Median dollars. NTA and block excluded."
+  },
+  {
+    "id": "pct_renter",
+    "group": "Housing",
+    "label": "Renter-occupied",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Occupied housing units",
+    "notes": ""
+  },
+  {
+    "id": "pct_rent_burdened",
+    "group": "Housing",
+    "label": "Rent burdened (30%+ of income)",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Renter units paying rent (excludes not computed)",
+    "notes": "Denominator subtracts not-computed cell."
+  },
+  {
+    "id": "pct_no_vehicle",
+    "group": "Housing",
+    "label": "No vehicle available",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Occupied housing units",
+    "notes": ""
+  },
+  {
+    "id": "pct_vacant",
+    "group": "Housing",
+    "label": "Vacant housing units",
+    "type": "rate",
+    "decimals": 1,
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "universe_label": "Total housing units",
+    "notes": ""
+  }
+]
