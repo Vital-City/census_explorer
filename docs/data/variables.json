@@ -5,7 +5,7 @@
     "label": "Total population",
     "type": "amount",
     "decimals": 0,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": "Population count. No share."
   },
@@ -15,7 +15,7 @@
     "label": "Population density (per sq mi)",
     "type": "amount",
     "decimals": 0,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Land area",
     "notes": "Computed as population divided by ALAND land area. No share."
   },
@@ -35,7 +35,7 @@
     "label": "Non-Hispanic white",
     "type": "rate",
     "decimals": 1,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": ""
   },
@@ -45,7 +45,7 @@
     "label": "Non-Hispanic Black",
     "type": "rate",
     "decimals": 1,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": ""
   },
@@ -55,7 +55,7 @@
     "label": "Non-Hispanic Asian",
     "type": "rate",
     "decimals": 1,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": ""
   },
@@ -65,7 +65,7 @@
     "label": "Hispanic or Latino (any race)",
     "type": "rate",
     "decimals": 1,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": ""
   },
@@ -75,7 +75,7 @@
     "label": "Other or two+ races (non-Hispanic)",
     "type": "rate",
     "decimals": 1,
-    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["block", "blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": "Multi-cell sum. Confirm cells on first run."
   },
@@ -85,7 +85,7 @@
     "label": "Under 18",
     "type": "rate",
     "decimals": 1,
-    "geos": ["tract", "nta", "puma", "borough"],
+    "geos": ["tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": "B09001 not reliably at block group."
   },
@@ -95,7 +95,7 @@
     "label": "Age 65 and older",
     "type": "rate",
     "decimals": 1,
-    "geos": ["tract", "nta", "puma", "borough"],
+    "geos": ["tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": "Multi-cell sum by sex. Confirm cells on first run."
   },
@@ -105,7 +105,7 @@
     "label": "Foreign-born",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total population",
     "notes": ""
   },
@@ -125,7 +125,7 @@
     "label": "Below poverty line",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Population with poverty status determined",
     "notes": ""
   },
@@ -135,7 +135,7 @@
     "label": "Bachelor's degree or higher",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Population 25 and older",
     "notes": "Multi-cell sum. Confirm cells on first run."
   },
@@ -145,7 +145,7 @@
     "label": "Unemployment rate",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Civilian labor force 16+",
     "notes": ""
   },
@@ -155,7 +155,7 @@
     "label": "Receiving SNAP benefits",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Households",
     "notes": ""
   },
@@ -165,7 +165,7 @@
     "label": "Commute by public transit",
     "type": "rate",
     "decimals": 1,
-    "geos": ["tract", "nta", "puma", "borough"],
+    "geos": ["tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Workers 16+ who commute",
     "notes": "B08301 not reliably at block group."
   },
@@ -195,7 +195,7 @@
     "label": "Renter-occupied",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Occupied housing units",
     "notes": ""
   },
@@ -205,7 +205,7 @@
     "label": "Rent burdened (30%+ of income)",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Renter units paying rent (excludes not computed)",
     "notes": "Denominator subtracts not-computed cell."
   },
@@ -215,7 +215,7 @@
     "label": "No vehicle available",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Occupied housing units",
     "notes": ""
   },
@@ -225,7 +225,7 @@
     "label": "Vacant housing units",
     "type": "rate",
     "decimals": 1,
-    "geos": ["blockgroup", "tract", "nta", "puma", "borough"],
+    "geos": ["blockgroup", "tract", "nta", "puma", "borough", "precinct"],
     "universe_label": "Total housing units",
     "notes": ""
   }
