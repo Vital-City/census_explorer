@@ -97,7 +97,7 @@
 const SLUG = "nyc-census-explorer";
 const DATA = "./data/";
 const DEFAULT_VIEW = { center:[40.7128,-74.0060], zoom:10 };
-const RAMP = ["#fdeaf0","#f4aec6","#ec739c","#e7466d","#b12b52"]; // sequential magenta, subject color
+const RAMP = ["#ffe8a8","#fdc474","#f79a53","#ee6a4c","#d83e63","#8f1f5a"]; // 6-class multi-hue sequential, ends on brand magenta/plum
 const NODATA = "#e9e9e9";
 const NYC_BOUNDS = L.latLngBounds([40.45,-74.30],[40.95,-73.65]);
 
@@ -177,8 +177,9 @@ function breaks(vals){
   const s=vals.filter(x=>x!=null&&x!=="").map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
   if(!s.length) return [];
   const q=p=>s[Math.min(s.length-1,Math.floor(p*s.length))];
-  // sort the breaks themselves so a skewed or dirty input can never scramble them
-  return [q(.2),q(.4),q(.6),q(.8)].sort((a,b)=>a-b);
+  const n=RAMP.length, cuts=[];               // n colors need n-1 cutpoints
+  for(let k=1;k<n;k++) cuts.push(q(k/n));
+  return cuts.sort((a,b)=>a-b);               // sort so dirty input can never scramble
 }
 function colorFor(val,br){
   if(!Number.isFinite(val)) return NODATA;
@@ -287,7 +288,12 @@ function openPopup(f,lyr){
   const gid=f.properties.GEOID, v=state.variable, row=state.rows[gid];
   const vd=VARBYID[v];
   const mapped=num(row,colFor(v));
-  let html='<div class="vc-popup"><h4>'+LEVELS.find(l=>l.id===state.geo).label+' '+gid+'</h4>';
+  const nm=f.properties.name, boro=f.properties.boro;
+  const lvl=LEVELS.find(l=>l.id===state.geo).label;
+  // title: neighborhood/area name when we have one, else the borough or level
+  const title = nm ? nm : (boro ? boro : lvl);
+  const sub = [ (nm&&boro&&nm!==boro)?boro:null, lvl+" "+gid ].filter(Boolean).join(" \u00b7 ");
+  let html='<div class="vc-popup"><h4>'+title+'</h4>';
   html+='<div class="pv">'+fmtValue(v,mapped)+'</div>';
   if(vd.type==="rate"){
     const est=num(row,v+"__estimate"), uni=num(row,v+"__universe"), m=num(row,v+"__share_moe");
@@ -299,6 +305,7 @@ function openPopup(f,lyr){
     if(m!=null) html+='<div class="pm">margin of error \u00b1'+fmtValue(v,m).replace(/^[$]/,'$')+'</div>';
     html+='<div class="pm" style="margin-top:2px">universe: '+vd.universe_label.toLowerCase()+'</div>';
   }
+  html+='<div class="pm" style="margin-top:4px;color:#9a9a9a">'+sub+'</div>';
   html+='</div>';
   L.popup({className:'vc-pop'}).setLatLng(lyr.getBounds().getCenter()).setContent(html).openOn(map);
 }
