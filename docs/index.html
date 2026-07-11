@@ -104,6 +104,7 @@ const NYC_BOUNDS = L.latLngBounds([40.45,-74.30],[40.95,-73.65]);
 const LEVELS = [
   {id:"borough",    label:"Borough"},
   {id:"puma",       label:"PUMA (community district approx.)"},
+  {id:"precinct",   label:"Police precinct (modeled)"},
   {id:"nta",        label:"Neighborhood (NTA)"},
   {id:"tract",      label:"Census tract"},
   {id:"blockgroup", label:"Census block group"},
@@ -281,7 +282,14 @@ function renderReading(v,vals){
   const clean=vals.filter(x=>x!=null&&x!=="").map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
   const med=clean.length?clean[Math.floor(clean.length/2)]:null;
   const lvl=LEVELS.find(l=>l.id===state.geo).label.toLowerCase();
-  $('reading').innerHTML="Median across "+clean.length+" areas: <b>"+fmtValue(v,med)+"</b> &nbsp; ("+VARBYID[v].label.toLowerCase()+" by "+lvl+")";
+  let txt="Median across "+clean.length+" areas: <b>"+fmtValue(v,med)+"</b> &nbsp; ("+VARBYID[v].label.toLowerCase()+" by "+lvl+")";
+  if(state.geo==="precinct"){
+    const modeled = !(v==="total_pop" || v==="pop_density" || v.indexOf("_nh")>=0 || v==="pct_hispanic");
+    txt += modeled
+      ? ' <span style="color:#9a2a53">Modeled: apportioned from tracts by block population.</span>'
+      : ' <span style="color:#707175">Summed from census blocks.</span>';
+  }
+  $('reading').innerHTML=txt;
 }
 
 function openPopup(f,lyr){
